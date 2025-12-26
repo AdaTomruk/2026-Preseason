@@ -47,7 +47,7 @@ public class SimVisionSubsystem extends SubsystemBase implements VisionDeviceSub
         // Load the 2025 field layout with AprilTags
         AprilTagFieldLayout tagLayout;
         try {
-            tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+            tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
         } catch (Exception e) {
             // If 2025 field not available, use a default field layout
             System.err.println("Could not load 2025 Reefscape field, using 2024 Crescendo as fallback: " + e.getMessage());
