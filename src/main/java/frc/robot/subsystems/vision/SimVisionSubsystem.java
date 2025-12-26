@@ -150,5 +150,4 @@ public class SimVisionSubsystem extends SubsystemBase implements VisionDeviceSub
             }
         }
     }
-    }
 }
