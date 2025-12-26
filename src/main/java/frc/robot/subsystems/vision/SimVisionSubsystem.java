@@ -123,16 +123,19 @@ public class SimVisionSubsystem extends SubsystemBase implements VisionDeviceSub
         if (!results.isEmpty()) {
             // Process each result and keep updating the estimate
             // The last result will be the most recent one
+            PhotonPipelineResult lastValidResult = null;
             for (var result : results) {
                 Optional<EstimatedRobotPose> estimate = photonPoseEstimator.update(result);
                 if (estimate.isPresent()) {
                     latestPoseEstimate = estimate;
+                    lastValidResult = result;
                 }
             }
             
-            // Extract fiducial IDs from the first result
-            PhotonPipelineResult firstResult = results.get(0);
-            List<PhotonTrackedTarget> targetList = firstResult.getTargets();
+            // Extract fiducial IDs from the result that produced the pose estimate
+            // If no valid estimate was found, use the most recent result
+            PhotonPipelineResult resultForIds = lastValidResult != null ? lastValidResult : results.get(results.size() - 1);
+            List<PhotonTrackedTarget> targetList = resultForIds.getTargets();
             for (var target : targetList) {
                 fiducialIds.add(target.getFiducialId());
             }
