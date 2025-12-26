@@ -59,20 +59,18 @@ public class Autos {
             AutoConstants.kAutoAlignAdjustTimeout
         );
         
-        // Drive forward 2 meters from the starting position
+        // Use a deferred command to calculate the target pose when the command is scheduled
         return Commands.sequence(
             Commands.print("Driving forward 2 meters"),
-            Commands.runOnce(() -> {
+            Commands.defer(() -> {
                 Pose2d currentPose = drivetrain.getState().Pose;
                 Pose2d targetPose = new Pose2d(
                     currentPose.getX() + 2.0,
                     currentPose.getY(),
                     currentPose.getRotation()
                 );
-            }),
-            pathGenerator.generatePathCommand(
-                new Pose2d(2.0, 0.0, Rotation2d.fromDegrees(0))
-            ),
+                return pathGenerator.generatePathCommand(targetPose);
+            }, java.util.Set.of(drivetrain)),
             Commands.print("Finished driving forward")
         );
     }

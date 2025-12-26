@@ -95,16 +95,16 @@ All configuration constants are defined in `Constants.java` under the `AutoConst
 public static final PathConstraints kAutoPathConstraints = new PathConstraints(
     MetersPerSecond.of(4.0),           // Max velocity
     MetersPerSecondPerSecond.of(3.0),  // Max acceleration
-    MetersPerSecond.of(Math.toRadians(540)),      // Max angular velocity
-    MetersPerSecondPerSecond.of(Math.toRadians(720)) // Max angular acceleration
+    RadiansPerSecond.of(Math.toRadians(540)),      // Max angular velocity
+    RadiansPerSecondPerSecond.of(Math.toRadians(720)) // Max angular acceleration
 );
 
 // PathPlanner constraints for teleop (slower for safety)
 public static final PathConstraints kTeleopPathConstraints = new PathConstraints(
     MetersPerSecond.of(3.0),           // Max velocity
     MetersPerSecondPerSecond.of(2.0),  // Max acceleration
-    MetersPerSecond.of(Math.toRadians(360)),      // Max angular velocity
-    MetersPerSecondPerSecond.of(Math.toRadians(540)) // Max angular acceleration
+    RadiansPerSecond.of(Math.toRadians(360)),      // Max angular velocity
+    RadiansPerSecondPerSecond.of(Math.toRadians(540)) // Max angular acceleration
 );
 
 // Trapezoidal profile constraints for DriveToPointCommand
