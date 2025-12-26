@@ -13,6 +13,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
+import frc.robot.subsystems.vision.SimVisionSubsystem;
+import frc.robot.subsystems.vision.VisionDeviceSubsystem;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -43,14 +46,18 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     
-    private final LimelightVisionSubsystem visionSubsystem;
+    private final VisionDeviceSubsystem visionSubsystem;
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
-        // Create vision subsystem
-        visionSubsystem = new LimelightVisionSubsystem(drivetrain);
+        // Create vision subsystem - use simulation version in simulation
+        if (RobotBase.isSimulation()) {
+            visionSubsystem = new SimVisionSubsystem(drivetrain);
+        } else {
+            visionSubsystem = new LimelightVisionSubsystem(drivetrain);
+        }
         
         autoChooser = AutoBuilder.buildAutoChooser("Tests");
         SmartDashboard.putData("Auto Mode", autoChooser);
@@ -110,7 +117,7 @@ public class RobotContainer {
         return autoChooser.getSelected();
     }
     
-    public LimelightVisionSubsystem getVisionSubsystem() {
+    public VisionDeviceSubsystem getVisionSubsystem() {
         return visionSubsystem;
     }
 }
