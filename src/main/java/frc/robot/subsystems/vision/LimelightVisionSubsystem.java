@@ -5,6 +5,7 @@
 package frc.robot.subsystems.vision;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -67,12 +68,7 @@ public class LimelightVisionSubsystem extends SubsystemBase implements VisionDev
      */
     public ArrayList<VisionMeasurement> getVisionMeasurements() {
         ArrayList<VisionMeasurement> measurements = new ArrayList<>();
-        
-        var driveState = drivetrain.getState();
-        double robotSpeed = Math.hypot(
-            driveState.Speeds.vxMetersPerSecond,
-            driveState.Speeds.vyMetersPerSecond
-        );
+        double robotSpeed = getRobotSpeed();
 
         for (var limelight : limelights) {
             var measurement = limelight.getVisionMeasurement(robotSpeed);
@@ -98,30 +94,24 @@ public class LimelightVisionSubsystem extends SubsystemBase implements VisionDev
 
     @Override
     public ArrayList<Integer> getVisibleTagIDs() {
-        ArrayList<Integer> allTagIds = new ArrayList<>();
+        HashSet<Integer> uniqueTagIds = new HashSet<>();
         
         for (var limelight : limelights) {
             int[] tagIds = limelight.getVisibleTagIDs();
             for (int id : tagIds) {
-                if (!allTagIds.contains(id)) {
-                    allTagIds.add(id);
-                }
+                uniqueTagIds.add(id);
             }
         }
         
-        return allTagIds;
+        return new ArrayList<>(uniqueTagIds);
     }
 
     @Override
     public Optional<Pose2d> getBotPose2dFromCamera() {
         // Return the first available pose from any camera
+        double robotSpeed = getRobotSpeed();
+        
         for (var limelight : limelights) {
-            var driveState = drivetrain.getState();
-            double robotSpeed = Math.hypot(
-                driveState.Speeds.vxMetersPerSecond,
-                driveState.Speeds.vyMetersPerSecond
-            );
-            
             var measurement = limelight.getVisionMeasurement(robotSpeed);
             if (measurement.isPresent()) {
                 return Optional.of(measurement.get().pose());
@@ -129,6 +119,19 @@ public class LimelightVisionSubsystem extends SubsystemBase implements VisionDev
         }
         
         return Optional.empty();
+    }
+
+    /**
+     * Calculate the current robot speed from drivetrain state.
+     * 
+     * @return Robot speed in meters per second
+     */
+    private double getRobotSpeed() {
+        var driveState = drivetrain.getState();
+        return Math.hypot(
+            driveState.Speeds.vxMetersPerSecond,
+            driveState.Speeds.vyMetersPerSecond
+        );
     }
 
     /**
