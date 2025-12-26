@@ -6,8 +6,11 @@ package frc.robot.subsystems.vision;
 
 import java.util.Optional;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 
 import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.VisionConstants.LimelightConstants;
@@ -148,8 +151,7 @@ public class LimelightDevice {
      * - Greater distance = higher std dev
      * - Higher robot speed = higher std dev
      */
-    private edu.wpi.first.math.Matrix<edu.wpi.first.math.numbers.N3, edu.wpi.first.math.numbers.N1> 
-            calculateStdDevs(int tagCount, double avgDistance, double robotSpeed) {
+    private Matrix<N3, N1> calculateStdDevs(int tagCount, double avgDistance, double robotSpeed) {
         
         // Base standard deviations (x, y, theta)
         double xyStdDev = 0.5;

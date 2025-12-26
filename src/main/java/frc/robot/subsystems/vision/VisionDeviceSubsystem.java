@@ -9,6 +9,6 @@ import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public interface VisionDeviceSubsystem {
-    public ArrayList<Integer> getVisibleTagIDs();
-    public Optional<Pose2d> getBotPose2dFromCamera();
+    ArrayList<Integer> getVisibleTagIDs();
+    Optional<Pose2d> getBotPose2dFromCamera();
 }
