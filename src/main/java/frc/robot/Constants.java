@@ -8,6 +8,8 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 
 public final class Constants {
     
@@ -16,15 +18,15 @@ public final class Constants {
         public static final PathConstraints kAutoPathConstraints = new PathConstraints(
             MetersPerSecond.of(4.0),           // Max velocity
             MetersPerSecondPerSecond.of(3.0),  // Max acceleration
-            MetersPerSecond.of(Math.toRadians(540)),      // Max angular velocity
-            MetersPerSecondPerSecond.of(Math.toRadians(720)) // Max angular acceleration
+            RadiansPerSecond.of(Math.toRadians(540)),      // Max angular velocity
+            RadiansPerSecondPerSecond.of(Math.toRadians(720)) // Max angular acceleration
         );
         
         public static final PathConstraints kTeleopPathConstraints = new PathConstraints(
             MetersPerSecond.of(3.0),           // Max velocity (slower for teleop)
             MetersPerSecondPerSecond.of(2.0),  // Max acceleration (slower for teleop)
-            MetersPerSecond.of(Math.toRadians(360)),      // Max angular velocity
-            MetersPerSecondPerSecond.of(Math.toRadians(540)) // Max angular acceleration
+            RadiansPerSecond.of(Math.toRadians(360)),      // Max angular velocity
+            RadiansPerSecondPerSecond.of(Math.toRadians(540)) // Max angular acceleration
         );
         
         // Trapezoidal profile constraints for DriveToPointCommand

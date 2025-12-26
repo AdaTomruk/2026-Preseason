@@ -27,6 +27,10 @@ import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 import frc.robot.subsystems.vision.SimVisionSubsystem;
 import frc.robot.subsystems.vision.VisionDeviceSubsystem;
 
+// Uncomment to use on-the-fly path generation commands:
+// import frc.robot.commands.autos.OnTheFlyPathCommand;
+// import frc.robot.commands.autos.AutoCommandExamples;
+
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -108,6 +112,24 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
+        // Example: Use on-the-fly path generation commands
+        // Uncomment to enable driving to a specific pose when pressing the right bumper:
+        /*
+        OnTheFlyPathCommand pathGenerator = new OnTheFlyPathCommand(
+            drivetrain,
+            Constants.AutoConstants.kTeleopPathConstraints,
+            Constants.AutoConstants.kTeleopAlignAdjustTimeout
+        );
+        
+        joystick.rightBumper().onTrue(
+            pathGenerator.generatePathCommand(
+                new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(45))
+            )
+        );
+        */
+        
+        // More examples available in AutoCommandExamples class
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
