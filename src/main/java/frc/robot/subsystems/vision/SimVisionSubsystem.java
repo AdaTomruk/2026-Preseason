@@ -49,8 +49,15 @@ public class SimVisionSubsystem extends SubsystemBase implements VisionDeviceSub
         try {
             tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
         } catch (Exception e) {
-            // If 2025 field not available, try loading a generic field
-            tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+            // If 2025 field not available, use a default field layout
+            System.err.println("Could not load 2025 Reefscape field, using 2024 Crescendo as fallback: " + e.getMessage());
+            try {
+                tagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+            } catch (Exception e2) {
+                // Last resort: create an empty field layout
+                System.err.println("Could not load any field layout: " + e2.getMessage());
+                throw new RuntimeException("Failed to load AprilTag field layout for simulation", e2);
+            }
         }
         visionSim.addAprilTags(tagLayout);
 
@@ -114,11 +121,13 @@ public class SimVisionSubsystem extends SubsystemBase implements VisionDeviceSub
         fiducialIds = new ArrayList<>();
 
         if (!results.isEmpty()) {
-            latestPoseEstimate = Optional.empty();
-            
-            // Update pose estimate with each result
+            // Process each result and keep updating the estimate
+            // The last result will be the most recent one
             for (var result : results) {
-                latestPoseEstimate = photonPoseEstimator.update(result);
+                Optional<EstimatedRobotPose> estimate = photonPoseEstimator.update(result);
+                if (estimate.isPresent()) {
+                    latestPoseEstimate = estimate;
+                }
             }
             
             // Extract fiducial IDs from the first result
