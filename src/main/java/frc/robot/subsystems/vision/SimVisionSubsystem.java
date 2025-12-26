@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.photonvision.PhotonCamera;
-import org.photonvision.estimation.TargetModel;
 import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
