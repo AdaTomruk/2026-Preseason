@@ -4,7 +4,39 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.path.PathConstraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+
 public final class Constants {
+    
+    public static final class AutoConstants {
+        // PathPlanner path constraints for auto and teleop
+        public static final PathConstraints kAutoPathConstraints = new PathConstraints(
+            MetersPerSecond.of(4.0),           // Max velocity
+            MetersPerSecondPerSecond.of(3.0),  // Max acceleration
+            MetersPerSecond.of(Math.toRadians(540)),      // Max angular velocity
+            MetersPerSecondPerSecond.of(Math.toRadians(720)) // Max angular acceleration
+        );
+        
+        public static final PathConstraints kTeleopPathConstraints = new PathConstraints(
+            MetersPerSecond.of(3.0),           // Max velocity (slower for teleop)
+            MetersPerSecondPerSecond.of(2.0),  // Max acceleration (slower for teleop)
+            MetersPerSecond.of(Math.toRadians(360)),      // Max angular velocity
+            MetersPerSecondPerSecond.of(Math.toRadians(540)) // Max angular acceleration
+        );
+        
+        // Trapezoidal profile constraints for DriveToPointCommand
+        public static final TrapezoidProfile.Constraints kDriveToPointConstraints = 
+            new TrapezoidProfile.Constraints(4.0, 3.0); // Max vel: 4 m/s, Max accel: 3 m/s^2
+        
+        // Tolerances and timeouts
+        public static final double kDriveToPointTolerance = 0.1; // meters
+        public static final double kMinimumDriveSpeed = 0.3; // meters per second
+        public static final double kAutoAlignAdjustTimeout = 1.5; // seconds
+        public static final double kTeleopAlignAdjustTimeout = 2.0; // seconds
+    }
     
     public static final class VisionConstants {
         public static final boolean kVisionDiagnostics = false;
