@@ -108,7 +108,7 @@ public class SimVisionSubsystem extends SubsystemBase implements VisionDeviceSub
         return Optional.of(result);
     }
        
-    @Override
+     @Override
     public void simulationPeriodic() {
         // Get the current robot pose from the drivetrain
         Pose2d simPose = drivetrain.getState().Pose;
@@ -121,8 +121,8 @@ public class SimVisionSubsystem extends SubsystemBase implements VisionDeviceSub
         fiducialIds = new ArrayList<>();
 
         if (!results.isEmpty()) {
-            // Process each result and keep updating the estimate
-            // The last result will be the most recent one
+            // Process all results to update the pose estimator's internal state
+            // and keep the most recent valid estimate
             PhotonPipelineResult lastValidResult = null;
             for (var result : results) {
                 Optional<EstimatedRobotPose> estimate = photonPoseEstimator.update(result);
@@ -134,7 +134,7 @@ public class SimVisionSubsystem extends SubsystemBase implements VisionDeviceSub
             
             // Extract fiducial IDs from the result that produced the pose estimate
             // If no valid estimate was found, use the most recent result
-            PhotonPipelineResult resultForIds = lastValidResult != null ? lastValidResult : results.get(results.size() - 1);
+            PhotonPipelineResult resultForIds = (lastValidResult != null) ? lastValidResult : results.get(results.size() - 1);
             List<PhotonTrackedTarget> targetList = resultForIds.getTargets();
             for (var target : targetList) {
                 fiducialIds.add(target.getFiducialId());
@@ -149,5 +149,6 @@ public class SimVisionSubsystem extends SubsystemBase implements VisionDeviceSub
                 );
             }
         }
+    }
     }
 }
