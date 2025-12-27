@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants.VisionConstants;
-import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.util.VisionMeasurement;
 
@@ -33,18 +32,6 @@ public class LimelightVisionSubsystem extends SubsystemBase implements VisionDev
 
     @Override
     public void periodic() {
-        // Update robot orientation for all Limelights
-        var driveState = drivetrain.getState();
-        double headingDeg = driveState.Pose.getRotation().getDegrees();
-        
-        for (var limelight : limelights) {
-            LimelightHelpers.SetRobotOrientation(
-                limelight.getName(),
-                headingDeg,
-                0, 0, 0, 0, 0
-            );
-        }
-
         // Get and process vision measurements
         var measurements = getVisionMeasurements();
         for (var measurement : measurements) {
@@ -69,9 +56,10 @@ public class LimelightVisionSubsystem extends SubsystemBase implements VisionDev
     public ArrayList<VisionMeasurement> getVisionMeasurements() {
         ArrayList<VisionMeasurement> measurements = new ArrayList<>();
         double robotSpeed = getRobotSpeed();
+        var robotHeading = drivetrain.getState().Pose.getRotation();
 
         for (var limelight : limelights) {
-            var measurement = limelight.getVisionMeasurement(robotSpeed);
+            var measurement = limelight.getVisionMeasurement(robotSpeed, robotHeading);
             measurement.ifPresent(measurements::add);
         }
 
@@ -110,9 +98,10 @@ public class LimelightVisionSubsystem extends SubsystemBase implements VisionDev
     public Optional<Pose2d> getBotPose2dFromCamera() {
         // Return the first available pose from any camera
         double robotSpeed = getRobotSpeed();
+        var robotHeading = drivetrain.getState().Pose.getRotation();
         
         for (var limelight : limelights) {
-            var measurement = limelight.getVisionMeasurement(robotSpeed);
+            var measurement = limelight.getVisionMeasurement(robotSpeed, robotHeading);
             if (measurement.isPresent()) {
                 return Optional.of(measurement.get().pose());
             }
