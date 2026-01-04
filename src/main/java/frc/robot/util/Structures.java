@@ -4,6 +4,8 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import frc.robot.Constants.VisionConstants.LimelightModel;
+import frc.robot.Constants.VisionConstants.LimelightRole;
 import frc.robot.Constants.VisionConstants.PoseEstimationMethod;
 
 public class Structures {
@@ -17,6 +19,13 @@ public class Structures {
         double diagTagDistance,
         double diagRobotSpeed,
         PoseEstimationMethod diagMethod
+    ) {}
+
+    public final record LimelightConstants(
+        String name,
+        LimelightModel model,
+        int id,
+        LimelightRole role
     ) {}
 
 }

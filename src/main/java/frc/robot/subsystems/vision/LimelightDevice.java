@@ -22,6 +22,7 @@ import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.Robot;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.util.Structures.LimelightConstants;
 import frc.robot.util.Structures.VisionMeasurement;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
 
@@ -33,11 +34,11 @@ public class LimelightDevice extends SubsystemBase {
     private final VisionConstants.LimelightRole role;
     private int[] tagFilter = new int[]{};
 
-    public LimelightDevice(String name, VisionConstants.LimelightModel model, int id, VisionConstants.LimelightRole role) {
-        this.name = name;
-        this.model = model;
-        this.id = id;
-        this.role = role;
+    public LimelightDevice(LimelightConstants constants) {
+        this.name = "limelight-" + constants.name();
+        this.model = constants.model();
+        this.id = constants.id();
+        this.role = constants.role();
     }
 
     public Void setTagFilter(Optional <DriverStation.Alliance> alliance) {
