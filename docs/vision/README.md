@@ -6,6 +6,20 @@ This directory contains comprehensive documentation for the AdaTomruk 2026 Prese
 
 ## Documentation Files
 
+### 📊 [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md)
+**High-Level Overview for Leadership**
+
+Quick reference for team leadership, mentors, and stakeholders:
+- Current system status and capabilities
+- Critical issues requiring attention
+- Resource requirements and timeline
+- Risk assessment and mitigation
+- Team recommendations by role
+
+**Start here** for a high-level understanding.
+
+---
+
 ### 📋 [VISION_SYSTEM_ANALYSIS.md](VISION_SYSTEM_ANALYSIS.md)
 **Critical Issues and Missing Components**
 
@@ -32,6 +46,22 @@ Detailed architectural documentation including:
 - Integration points with drivetrain
 
 **Read this** to understand how the system works internally.
+
+---
+
+### 📈 [FLOWCHARTS.md](FLOWCHARTS.md)
+**Visual Flowcharts and Decision Trees**
+
+Detailed flowcharts illustrating:
+- System initialization sequence
+- Periodic update flow (20ms loop)
+- MegaTag selection decision tree
+- Vision measurement validation pipeline
+- Standard deviation calculation examples
+- Error handling and recovery
+- Alliance tag filter setup
+
+**Use this** to visualize the system's operation.
 
 ---
 
@@ -73,10 +103,11 @@ Complete configuration reference:
 
 ### For New Team Members
 
-1. Read **VISION_SYSTEM_ANALYSIS.md** to understand current issues
-2. Review **VISION_SYSTEM_ARCHITECTURE.md** to learn how it works
-3. Reference **TROUBLESHOOTING_GUIDE.md** when debugging
-4. Use **CONFIGURATION_GUIDE.md** for setup and tuning
+1. Start with **EXECUTIVE_SUMMARY.md** for a high-level overview
+2. Read **VISION_SYSTEM_ANALYSIS.md** to understand current issues
+3. Review **VISION_SYSTEM_ARCHITECTURE.md** and **FLOWCHARTS.md** to learn how it works
+4. Reference **TROUBLESHOOTING_GUIDE.md** when debugging
+5. Use **CONFIGURATION_GUIDE.md** for setup and tuning
 
 ### For Debugging Issues
 
@@ -260,11 +291,13 @@ src/main/deploy/
 
 ```
 docs/vision/
-├── README.md                      # This file
-├── VISION_SYSTEM_ANALYSIS.md     # Critical issues and analysis
-├── VISION_SYSTEM_ARCHITECTURE.md  # System design and flow
-├── TROUBLESHOOTING_GUIDE.md      # Debugging guide
-└── CONFIGURATION_GUIDE.md        # Setup and tuning guide
+├── README.md                          # This file - documentation index
+├── EXECUTIVE_SUMMARY.md              # High-level overview for leadership
+├── VISION_SYSTEM_ANALYSIS.md         # Critical issues and analysis
+├── VISION_SYSTEM_ARCHITECTURE.md     # System design and flow
+├── FLOWCHARTS.md                     # Visual diagrams and decision trees
+├── TROUBLESHOOTING_GUIDE.md          # Debugging guide
+└── CONFIGURATION_GUIDE.md            # Setup and tuning guide
 ```
 
 ---
