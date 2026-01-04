@@ -195,9 +195,11 @@ kMaxAngularSpeed = 720 deg/s       (reject MT2 if spinning faster)
 RED_ALLIANCE  = { 1, 2, 3, 4, 5, 6 }
 BLUE_ALLIANCE = { 1, 2, 3, 4, 5, 6 }
 
-// Should be:
-RED_ALLIANCE  = { 9, 10, 11, 12, 13, 14, 15, 16 }
+// Should be (for 2025 Reefscape - verify exact layout):
+RED_ALLIANCE  = { 9, 10, 11 }  // Example for 11-tag field
 BLUE_ALLIANCE = { 1, 2, 3, 4, 5, 6, 7, 8 }
+
+// NOTE: Check actual field documentation for exact tag positions
 ```
 
 ---

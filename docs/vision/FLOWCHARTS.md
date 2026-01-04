@@ -582,7 +582,7 @@ Effect on Detection:
 Blue Alliance Side                     Red Alliance Side
 (Driver Station)                       (Driver Station)
 
-    Tags 1-8                               Tags 9-16
+    Tags 1-8                               Tags 9-11
     
     ┌─────────────────────────────────────────────────┐
     │  1   2   3   4   5   6   7   8                  │ Blue
@@ -592,15 +592,18 @@ Blue Alliance Side                     Red Alliance Side
     │              🤖 Robot                            │
     │                                                  │
     │                                                  │
-    │                 ●   ●   ●   ●   ●   ●   ●   ●  │ Red
-    │                 9   10  11  12  13  14  15  16  │
+    │                                 ●   ●   ●       │ Red
+    │                                 9   10  11      │
     └─────────────────────────────────────────────────┘
 
-Alliance Configuration:
+Alliance Configuration (verify with field documentation):
     Blue Robot: Should only see tags 1-8
-    Red Robot: Should only see tags 9-16
+    Red Robot: Should only see tags 9-11
 
 Purpose: Prevents cross-field ambiguity
+
+Note: 2025 Reefscape has 11 tags total (IDs 1-11).
+Exact positions depend on final field layout.
 ```
 
 ---

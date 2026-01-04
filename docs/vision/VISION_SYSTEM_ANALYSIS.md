@@ -84,9 +84,10 @@ public static final int[] BLUE_ALLIANCE = { 1, 2, 3, 4, 5, 6 };
 - Could cause confusion in autonomous positioning
 - Not utilizing full field layout
 
-**Expected Configuration** (2025 Reefscape):
+**Expected Configuration** (2025 Reefscape - 11 tags total):
 ```java
-public static final int[] RED_ALLIANCE = { 9, 10, 11, 12, 13, 14, 15, 16 };  
+// Verify actual field layout - example configuration:
+public static final int[] RED_ALLIANCE = { 9, 10, 11 };  
 public static final int[] BLUE_ALLIANCE = { 1, 2, 3, 4, 5, 6, 7, 8 };
 ```
 

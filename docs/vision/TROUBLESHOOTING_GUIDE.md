@@ -212,9 +212,13 @@ public static final int[] BLUE_ALLIANCE = { 1, 2, 3, 4, 5, 6 };
 **Solution:**
 
 ```java
-// Fix alliance tag regions (2025 Reefscape field)
-public static final int[] RED_ALLIANCE = { 9, 10, 11, 12, 13, 14, 15, 16 };
+// Fix alliance tag regions (2025 Reefscape field - verify actual layout)
+// Example configuration for 11-tag field:
+public static final int[] RED_ALLIANCE = { 9, 10, 11 };
 public static final int[] BLUE_ALLIANCE = { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+// NOTE: Verify exact tag layout with field documentation!
+// The 2025 Reefscape field has 11 tags total (IDs 1-11)
 ```
 
 ---

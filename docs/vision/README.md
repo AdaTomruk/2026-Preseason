@@ -257,9 +257,11 @@ Calculated based on:
 
 Different tags are visible to different alliances:
 - **Blue Alliance:** Should see tags 1-8
-- **Red Alliance:** Should see tags 9-16
+- **Red Alliance:** Should see tags 9-11 (verify actual layout)
 
 **⚠️ Currently broken** - both alliances see same tags!
+
+Note: 2025 Reefscape field has 11 tags total (IDs 1-11). Exact alliance assignment depends on final field layout.
 
 ---
 
