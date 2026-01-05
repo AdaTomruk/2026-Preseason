@@ -68,6 +68,9 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    CommandScheduler.getInstance().cancelAll();
+
+    TELEOP_TIMER.restart();
   }
 
   @Override
@@ -78,9 +81,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    CommandScheduler.getInstance().cancelAll();
 
-    TELEOP_TIMER.restart();
   }
 
   @Override

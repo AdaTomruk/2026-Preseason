@@ -55,20 +55,21 @@ public class RobotContainer {
     private static  AprilTagFieldLayout fieldLayout;
 
     static {
-    try {
-        // MATCH THIS FILENAME TO YOUR FILE
-        String path = Filesystem.getDeployDirectory().toPath().resolve("custom_field.json").toString();
-        fieldLayout = new AprilTagFieldLayout(path);
-    } catch (IOException e) {
-        // If it fails, report it and try loading the default field as a backup
-        DriverStation.reportError("Failed to load custom field: " + e.getMessage(), e.getStackTrace());
         try {
-            fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
-        } catch (Exception ex) {
-            fieldLayout = null;
+            // MATCH THIS FILENAME TO YOUR FILE
+            String path = Filesystem.getDeployDirectory().toPath().resolve("custom_field.json").toString();
+            fieldLayout = new AprilTagFieldLayout(path);
+        } catch (IOException e) {
+            // If it fails, report it and try loading the default field as a backup
+            DriverStation.reportError("Failed to load custom field: " + e.getMessage(), e.getStackTrace());
+            try {
+                fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
+            } catch (Exception ex) {
+                // If even the default fails, we have no layout
+                fieldLayout = null; // ← Can be null!
+            }
         }
     }
-}
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
