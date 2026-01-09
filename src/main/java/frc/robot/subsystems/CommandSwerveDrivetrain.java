@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -326,4 +326,22 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     ) {
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
+
+    public ChassisSpeeds getFieldVelocity() {
+        // 1. Get the current state of the swerve modules (speed and angle)
+        // m_kinematics is usually a public final member of the base SwerveDrivetrain class
+        // or defined in your Constants.
+        var moduleStates = this.getState().ModuleStates;
+    
+        // 2. Convert module states to robot-relative chassis speeds
+        ChassisSpeeds robotRelativeSpeeds = this.getKinematics().toChassisSpeeds(moduleStates);
+    
+        // 3. Convert robot-relative speeds to field-relative speeds
+        // We use the robot's current rotation to "undo" the robot's facing direction
+        return ChassisSpeeds.fromRobotRelativeSpeeds(
+            robotRelativeSpeeds,
+            this.getRotation3d().toRotation2d()
+        );
+    }
+
 }
