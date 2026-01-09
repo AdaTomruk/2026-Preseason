@@ -39,7 +39,7 @@ public class Constants {
 
             public RobotConfig PathPlanerConfig = new RobotConfig(
                 Kilogram.of(35),
-                KilogramSquareMeters.of(4.5), // CHANGED: Approximate MOI for a 28"x28" robot of this mass
+                KilogramSquareMeters.of(2.0), // CHANGED: Approximate MOI for a 28"x28" robot of this mass
                 new ModuleConfig(
                     Inches.of(2.0), // Standard 4" Wheel Radius (MK5n uses 4" wheels)
                     MetersPerSecond.of(5.5), // CHANGED: Theoretical max speed (Depends on your specific gear ratio, see below)
