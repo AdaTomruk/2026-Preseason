@@ -86,6 +86,11 @@ public class RobotContainer {
 
         driveToPointCommandFactory = new DriveToPointCommand(drivetrain);
 
+            // Initialize Dashboard Inputs for Auto Align
+        SmartDashboard.putNumber("PointX", 2.0);        // Default X in meters
+        SmartDashboard.putNumber("PointY", 4.0);        // Default Y in meters
+        SmartDashboard.putNumber("PointRotation", 0.0); // Default Rotation in degrees
+
         configureSwerveBindings();
         configureMiscBindings();
 
