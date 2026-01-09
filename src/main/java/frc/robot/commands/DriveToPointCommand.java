@@ -4,7 +4,10 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.IdealStartingState;
@@ -17,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,106 +32,107 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class DriveToPointCommand {
     
     private final CommandSwerveDrivetrain drivetrain;
-    
-    public static void warmup(){
-        System.out.println("Drive To Point Command is Warmed Up");
-    }
-
     public static boolean isPIDLoopRunning = false;
+
+    // -- PUBLISHERS FOR ADVANTAGESCOPE --
+    // Logs the single final target pose (visualize as "2D Robot" or "Ghost")
+    private final StructPublisher<Pose2d> targetPosePublisher = NetworkTableInstance.getDefault()
+        .getTable("logging").getStructTopic("DriveToPoint/TargetPose", Pose2d.struct).publish();
+
+    // Logs the generated waypoints (visualize as "2D Poses" or "Trajectory")
+    private final StructArrayPublisher<Pose2d> pathPublisher = NetworkTableInstance.getDefault()
+        .getTable("logging").getStructArrayTopic("DriveToPoint/GeneratedPath", Pose2d.struct).publish();
 
     public DriveToPointCommand(CommandSwerveDrivetrain drivetrain) {
         this.drivetrain = drivetrain;
     }
 
-    private final StructPublisher<Pose2d> desiredBranchPublisher = NetworkTableInstance.getDefault().getTable("logging").getStructTopic("targeted position", Pose2d.struct).publish();
-
     private PathConstraints pathConstraints = Constants.DriveConstants.AutoConstants.kAutoPathConstraints;
 
-    public Command generateCommand(final Pose2d targetPose){
-        return Commands.defer(() ->{
-            return new getPathFromWaypoint(getWatpointFromPose2D(targetPose));
-        })
+    public Command generateCommand(final Pose2d targetPose) {
+        return Commands.defer(() -> {
+            // 1. Publish the target for visualization
+            targetPosePublisher.accept(targetPose);
+
+            return getPathFromWaypoint(targetPose);
+        }, Set.of(drivetrain));
     }
 
     private Command getPathFromWaypoint(Pose2d waypoint) {
         Pose2d offsetWaypoint = new Pose2d(
-            waypoint.getTranslation().plus(new Translation2d(Constants.DriveConstants.autoApproachOffset.in(Meters), waypoint.getRotation().rotateBy(Rotation2d.k180deg))),
+            waypoint.getTranslation().plus(new Translation2d(
+                Constants.DriveConstants.autoApproachOffset.in(Meters), 
+                waypoint.getRotation().rotateBy(Rotation2d.k180deg)
+            )),
             waypoint.getRotation()
         );
 
+        Pose2d currentPose = drivetrain.getState().Pose;
+        ChassisSpeeds currentSpeeds = drivetrain.getFieldVelocity();
+
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-            new Pose2d(drivetrain.getState().Pose.getTranslation(), getPathVelocityHeading(drivetrain.getFieldVelocity(), offsetWaypoint)),
+            new Pose2d(currentPose.getTranslation(), getPathVelocityHeading(currentSpeeds, offsetWaypoint)),
             offsetWaypoint
         );
 
+        // 2. Publish the simple path points for visualization
+        // (Converts PathPlanner waypoints to Pose2d for logging)
+        pathPublisher.set(waypoints.stream()
+            .map(p -> new Pose2d(p.anchor(), new Rotation2d())) 
+            .toArray(Pose2d[]::new)
+        );
+
         if (waypoints.get(0).anchor().getDistance(waypoints.get(1).anchor()) < 0.01) {
-            return 
-            Commands.sequence(
-                Commands.print("start position PID loop"),
+            return Commands.sequence(
+                Commands.print("Start position PID loop"),
                 PositionPIDCommand.generateCommand(drivetrain, waypoint, Constants.DriveConstants.AutoConstants.kAutoAlignAdjustTimeout),
-                Commands.print("end position PID loop")
+                Commands.print("End position PID loop")
             );
         }
-        var startingVel = getVelocityMagnitude(drivetrain.getFieldVelocity());
 
+        LinearVelocity startingVel = getVelocityMagnitude(currentSpeeds);
         if (DriverStation.isAutonomous()) {
-            startingVel = MetersPerSecond.of(
-                Math.max(startingVel.in(MetersPerSecond), 0.1)
-            );
+            startingVel = MetersPerSecond.of(Math.max(startingVel.in(MetersPerSecond), 0.1));
         }
 
         PathPlannerPath path = new PathPlannerPath(
             waypoints, 
-            DriverStation.isAutonomous() ? pathConstraints :Constants.DriveConstants.AutoConstants.kTeleopPathConstraints,
-            new IdealStartingState(
-                startingVel,
-                drivetrain.getState().RawHeading
-            ), 
+            DriverStation.isAutonomous() ? pathConstraints : Constants.DriveConstants.AutoConstants.kTeleopPathConstraints,
+            new IdealStartingState(startingVel, currentPose.getRotation()), 
             new GoalEndState(0.0, waypoint.getRotation())
         );
 
         path.preventFlipping = true;
 
-        return (AutoBuilder.followPath(path).andThen(
-            Commands.print("start position PID loop"),
-            PositionPIDCommand.generateCommand(drivetrain, waypoint, (
-                DriverStation.isAutonomous() ? Constants.DriveConstants.AutoConstants.kAutoAlignAdjustTimeout : Constants.DriveConstants.AutoConstants.kTeleopAlignAdjustTimeout
-            ))
-                .beforeStarting(Commands.runOnce(() -> {isPIDLoopRunning = true;}))
-                .finallyDo(() -> {isPIDLoopRunning = false;}),
-            Commands.print("end position PID loop")
-        )).finallyDo((interrupt) -> {
-            if (interrupt) { //if this is false then the position pid would've X braked & called the same method
-                drivetrain.applyRequest(null);
-            }
-        });        
-
+        return AutoBuilder.followPath(path)
+            .andThen(
+                Commands.print("Start position PID loop"),
+                PositionPIDCommand.generateCommand(drivetrain, waypoint, (
+                    DriverStation.isAutonomous() 
+                        ? Constants.DriveConstants.AutoConstants.kAutoAlignAdjustTimeout 
+                        : Constants.DriveConstants.AutoConstants.kTeleopAlignAdjustTimeout
+                ))
+                .beforeStarting(Commands.runOnce(() -> { isPIDLoopRunning = true; }))
+                .finallyDo(() -> { isPIDLoopRunning = false; }),
+                Commands.print("End position PID loop")
+            )
+            .finallyDo((interrupted) -> {
+                if (interrupted) {
+                    drivetrain.setControl(new SwerveRequest.SwerveDriveBrake());
+                }
+            });
     }
 
     private Rotation2d getPathVelocityHeading(ChassisSpeeds cs, Pose2d target){
+        Pose2d currentPose = drivetrain.getState().Pose;
         if (getVelocityMagnitude(cs).in(MetersPerSecond) < 0.25) {
-            System.out.println("approach: straight line");
-            var diff = target.getTranslation().minus(drivetrain.getState().Pose.getTranslation());
-            System.out.println("diff calc: \nx: " + diff.getX() + "\ny: " + diff.getY() + "\nDoT: " + diff.getAngle().getDegrees());
-            return (diff.getNorm() < 0.01) ? target.getRotation() : diff.getAngle();//.rotateBy(Rotation2d.k180deg);
+            var diff = target.getTranslation().minus(currentPose.getTranslation());
+            return (diff.getNorm() < 0.01) ? target.getRotation() : diff.getAngle();
         }
-
-        System.out.println("approach: compensating for velocity");
-
-        var rotation = new Rotation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond);
-        
-        System.out.println("velocity calc: \nx: " + cs.vxMetersPerSecond + "\ny: " + cs.vyMetersPerSecond + "\nDoT: " + rotation);
-
-        return rotation;
+        return new Rotation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond);
     }
 
     private LinearVelocity getVelocityMagnitude(ChassisSpeeds cs){
-        return MetersPerSecond.of(new Translation2d(cs.vxMetersPerSecond, cs.vyMetersPerSecond).getNorm());
+        return MetersPerSecond.of(Math.hypot(cs.vxMetersPerSecond, cs.vyMetersPerSecond));
     }
-
-
-    private Pose2d getWatpointFromPose2D(Pose2d pose) {
-        return new Pose2d();
-    }
-
 }

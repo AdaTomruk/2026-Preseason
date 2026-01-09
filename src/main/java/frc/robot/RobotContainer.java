@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
+import frc.robot.commands.DriveToPointCommand;
+
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.vision.LimelightVisionSubsystem;
@@ -49,6 +51,8 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    private DriveToPointCommand driveToPointCommandFactory = null;
 
     //vision
     LimelightVisionSubsystem visionSubsystem;
@@ -80,11 +84,14 @@ public class RobotContainer {
 
         visionSubsystem = new LimelightVisionSubsystem(drivetrain, fieldLayout);
 
+        driveToPointCommandFactory = new DriveToPointCommand(drivetrain);
+
         configureSwerveBindings();
         configureMiscBindings();
 
         // Warmup PathPlanner to avoid Java pauses
         FollowPathCommand.warmupCommand().schedule();
+
     }
 
     private void configureSwerveBindings() {
@@ -113,6 +120,17 @@ public class RobotContainer {
         );
         joystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
             forwardStraight.withVelocityX(-0.5).withVelocityY(0))
+        );
+
+        //go to point command takes ppoint from elastic dashboard
+        joystick.b().whileTrue(
+            driveToPointCommandFactory.generateCommand(
+                new edu.wpi.first.math.geometry.Pose2d(
+                    Meters.of(SmartDashboard.getNumber("PointX", 0.0)),
+                    Meters.of(SmartDashboard.getNumber("PointY", 0.0)),
+                    new Rotation2d(SmartDashboard.getNumber("PointRotation", 0.0))
+                )
+            )
         );
 
         // Run SysId routines when holding back/start and X/Y.
